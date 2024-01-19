@@ -15,5 +15,7 @@ To run the server, follow these steps:
 2. **Start the server**
 
    ```bash
-   docker run -p 6666:6666 doculoom-server
+   docker run -p 6666:6666 doculoom
 
+## LLM Configuration
+Add a .env file to the repository.
