@@ -13,7 +13,7 @@ class OpenAIModel(BaseModel):
         self.load()
 
     def load(self, model_type=M.GPT3_5):
-        openai_api_key = os.getenv("OPEN_AI_API_KEY")
+        openai_api_key = os.getenv("OPENAI_API_KEY")
         if not openai_api_key:
             raise ValueError("No API key set. Please set the OPEN_AI_API_KEY env var")
 
