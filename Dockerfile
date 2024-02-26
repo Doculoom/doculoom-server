@@ -1,10 +1,14 @@
-FROM python:3.8
+FROM python:3.11
+
+ARG OPENAI_API_KEY
 
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.lock ./
 RUN pip install poetry && poetry install --no-dev
 
-COPY . /app
+COPY . .
+
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "6666"]

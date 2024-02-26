@@ -1,12 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+
+from app.routers import docs, health
 
 app = FastAPI()
 
+app.include_router(docs.router, prefix="/docs", tags=["docs"])
+app.include_router(health.router, prefix="/health", tags=["health"])
 
-@app.post("/chat")
-async def chat(request_body: dict):
-    try:
-        response = {'message': f"Echo: {request_body.get('input', '')}"}
-        return response
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
