@@ -19,10 +19,10 @@ class Agent:
         self.model = model
         self.llm = model.llm
         self.base_dir = base_dir
-        self.conv_dir = base_dir + '/conversations'
+        self.conv_dir = base_dir + '/conversations' + f'/{self.model.model_name}'
         self.doc_dir = base_dir + '/docs'
-        self.index_dir = base_dir + '/index'
-        self.text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
+        self.index_dir = base_dir + '/index' + f'/{self.model.model_name}'
+        self.text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=10)
         self.embeddings = model.embeddings
         self.chain = None
         self.db = None
@@ -39,10 +39,10 @@ class Agent:
             os.makedirs(self.index_dir)
 
     def _get_index_path(self, name):
-        return f'{self.index_dir}/{self.model.model_name}/{name}'
+        return f'{self.index_dir}/{name}'
 
     def _get_conv_path(self, name):
-        return f'{self.conv_dir}/{self.model.model_name}/{name}.json'
+        return f'{self.conv_dir}/{name}.json'
 
     def create_chain(self, db):
         prompt = ChatPromptTemplate.from_messages([
@@ -130,8 +130,11 @@ class Agent:
     def load_chat_history(self, doc_name):
         if self.loaded_chat_history != doc_name:
             conv_path = self._get_conv_path(doc_name)
-            if not os.path.exists(self.conv_dir):
-                os.makedirs(self.conv_dir)
+            if not os.path.exists(conv_path):
+                os.makedirs(os.path.dirname(conv_path), exist_ok=True)
+                with open(conv_path, 'w') as f:
+                    json.dump({}, f)
+
             self.chat_history = FileChatMessageHistory(conv_path)
             self.loaded_chat_history = doc_name
 
