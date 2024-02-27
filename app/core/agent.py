@@ -53,7 +53,7 @@ class Agent:
 
         chain = create_stuff_documents_chain(
             llm=self.llm,
-            prompt=prompt
+            prompt=prompt,
         )
 
         retriever = db.as_retriever(search_kwargs={"k": 3})
@@ -66,12 +66,12 @@ class Agent:
         history_aware_retriever = create_history_aware_retriever(
             llm=self.llm,
             retriever=retriever,
-            prompt=retriever_prompt
+            prompt=retriever_prompt,
         )
 
         retrieval_chain = create_retrieval_chain(
             history_aware_retriever,
-            chain
+            chain,
         )
 
         return retrieval_chain
