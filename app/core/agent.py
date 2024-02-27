@@ -8,21 +8,22 @@ from langchain_community.chat_message_histories import FileChatMessageHistory
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_openai import OpenAIEmbeddings
 
+from app.core.models.base import BaseModel
 from app.helpers.constants import Prompts
 
 
 class Agent:
-    def __init__(self, llm, base_dir='data'):
+    def __init__(self, model: BaseModel, base_dir='data'):
         self.chat_history = None
-        self.llm = llm
+        self.model = model
+        self.llm = model.llm
         self.base_dir = base_dir
-        self.conv_dir = base_dir + '/conversations'
+        self.conv_dir = base_dir + '/conversations' + f'/{self.model.model_name}'
         self.doc_dir = base_dir + '/docs'
-        self.index_dir = base_dir + '/index'
-        self.text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
-        self.embeddings = OpenAIEmbeddings()
+        self.index_dir = base_dir + '/index' + f'/{self.model.model_name}'
+        self.text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=10)
+        self.embeddings = model.embeddings
         self.chain = None
         self.db = None
         self.loaded_doc = None
@@ -37,9 +38,15 @@ class Agent:
         if not os.path.exists(self.index_dir):
             os.makedirs(self.index_dir)
 
+    def _get_index_path(self, name):
+        return f'{self.index_dir}/{name}'
+
+    def _get_conv_path(self, name):
+        return f'{self.conv_dir}/{name}.json'
+
     def create_chain(self, db):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Answer the user's questions based on the context: {context}"),
+            ("system", Prompts.INITIAL_PROMPT),
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}")
         ])
@@ -54,7 +61,7 @@ class Agent:
         retriever_prompt = ChatPromptTemplate.from_messages([
             MessagesPlaceholder(variable_name="chat_history"),
             ("user", "{input}"),
-            ("user", Prompts.USE_CONTEXT_AND_ANSWER)
+            ("user", Prompts.RETRIEVER_PROMPT)
         ])
         history_aware_retriever = create_history_aware_retriever(
             llm=self.llm,
@@ -77,10 +84,11 @@ class Agent:
             "chat_history": self.chat_history.messages,
             "input": message,
         })
+        answer = response["answer"].strip()
 
         self.chat_history.add_user_message(message)
-        self.chat_history.add_ai_message(response["answer"])
-        return response["answer"]
+        self.chat_history.add_ai_message(answer)
+        return answer
 
     def clear_chat_history(self, doc_name):
         if not self.chat_history:
@@ -89,7 +97,7 @@ class Agent:
 
     def index_and_save(self, name, content):
         doc_path = self.save_document(name, content)
-        index_path = f"{self.index_dir}/{name}"
+        index_path = self._get_index_path(name)
 
         loader = TextLoader(doc_path)
         documents = loader.load()
@@ -98,15 +106,19 @@ class Agent:
         FAISS.from_documents(docs, self.embeddings).save_local(index_path)
 
     def check_index(self, name):
-        index_path = f"{self.index_dir}/{name}"
+        index_path = self._get_index_path(name)
         exists = os.path.exists(index_path)
         return exists
 
     def load_doc(self, name):
         if self.loaded_doc != name:
-            index_path = f"{self.index_dir}/{name}"
-            self.loaded_doc = name
-            self.db = FAISS.load_local(index_path, embeddings=self.embeddings)
+            index_path = self._get_index_path(name)
+            if os.path.exists(index_path):
+                self.loaded_doc = name
+                self.db = FAISS.load_local(index_path, self.embeddings)
+            else:
+                self.db = FAISS.from_texts([""], self.embeddings)
+
             self.chain = self.create_chain(self.db)
 
     def save_document(self, name, content):
@@ -117,20 +129,27 @@ class Agent:
 
     def load_chat_history(self, doc_name):
         if self.loaded_chat_history != doc_name:
-            filepath = os.path.join(self.conv_dir, f"{doc_name}.json")
-            self.chat_history = FileChatMessageHistory(filepath)
+            conv_path = self._get_conv_path(doc_name)
+            if not os.path.exists(conv_path):
+                os.makedirs(os.path.dirname(conv_path), exist_ok=True)
+                with open(conv_path, 'w') as f:
+                    json.dump({}, f)
+
+            self.chat_history = FileChatMessageHistory(conv_path)
             self.loaded_chat_history = doc_name
 
     def get_chat_messages(self, doc_name):
-        filepath = os.path.join(self.conv_dir, f"{doc_name}.json")
-        with open(filepath, 'r', encoding='utf-8') as file:
-            message_history = json.load(file)
-
+        conv_path = self._get_conv_path(doc_name)
         messages = []
-        for message in message_history:
-            messages.append({
-                'entity': message['type'],
-                'message': message['data']['content']
-            })
+
+        if os.path.exists(conv_path):
+            with open(conv_path, 'r', encoding='utf-8') as file:
+                message_history = json.load(file)
+
+            for message in message_history:
+                messages.append({
+                    'entity': message['type'],
+                    'message': message['data']['content']
+                })
 
         return messages
