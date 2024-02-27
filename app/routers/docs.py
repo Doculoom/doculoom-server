@@ -1,13 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
 from app.core.agent import Agent
-from app.core.models.openai import OpenAIModel
+from app.helpers.model_selector import ModelSelector
 from app.helpers.types import ChatRequest, DocRequest
 
 router = APIRouter()
 
-model = OpenAIModel()
-agent = Agent(model.llm)
+model = ModelSelector.select_default()
+agent = Agent(model)
 
 
 @router.post('/')
@@ -42,8 +42,6 @@ async def clear_history(doc_hash: str):
 
 @router.post('/{doc_hash}/chat')
 async def chat(doc_hash: str, request: ChatRequest):
-    try:
-        response = agent.chat(doc_hash, request.question)
-        return {"response": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    response = agent.chat(doc_hash, request.question)
+    return {"response": response}
+
