@@ -14,7 +14,7 @@ class ModelSelector:
     def select_default():
         selected_model = os.getenv('MODEL')
         if not selected_model:
-            selected_model = 'GEMMA'
+            selected_model = 'MISTRAL'
 
         if selected_model == 'GPT3_5':
             model = OpenAIWrapper(Models.GPT3_5)
