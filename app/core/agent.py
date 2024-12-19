@@ -115,9 +115,9 @@ class Agent:
             index_path = self._get_index_path(name)
             if os.path.exists(index_path):
                 self.loaded_doc = name
-                self.db = FAISS.load_local(index_path, self.embeddings)
+                self.db = FAISS.load_local(index_path, self.embeddings, allow_dangerous_deserialization=True)
             else:
-                self.db = FAISS.from_texts([""], self.embeddings)
+                self.db = FAISS.from_texts([""], self.embeddings, allow_dangerous_deserialization=True)
 
             self.chain = self.create_chain(self.db)
 
