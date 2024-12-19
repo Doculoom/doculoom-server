@@ -1,4 +1,3 @@
-import logging
 import os
 
 from app.core.models.ollama import OllamaWrapper
@@ -14,11 +13,9 @@ class ModelSelector:
     def select_default():
         selected_model = os.getenv('MODEL')
         if not selected_model:
-            selected_model = 'MISTRAL'
+            selected_model = 'LLAMA3_2_3B'
 
-        if selected_model == 'GPT3_5':
-            model = OpenAIWrapper(Models.GPT3_5)
-        elif selected_model == 'MISTRAL':
+        if selected_model == 'MISTRAL':
             model = OllamaWrapper(Models.MISTRAL)
         elif selected_model == 'QWEN7B':
             model = OllamaWrapper(Models.QWEN7B)
@@ -26,8 +23,10 @@ class ModelSelector:
             model = OllamaWrapper(Models.PHI)
         elif selected_model == 'GEMMA':
             model = OllamaWrapper(Models.GEMMA)
+        elif selected_model == 'LLAMA3_2_3B':
+            model = OllamaWrapper(Models.LLAMA3_2_3B)
         else:
-            raise ValueError(f"Invalid model selection {selected_model}, available types: GPT3_5, MISTRAL")
+            raise ValueError(f"Invalid model selection {selected_model}")
 
         logger.info(f"Using {selected_model} Model")
         return model
