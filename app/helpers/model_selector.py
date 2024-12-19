@@ -13,7 +13,7 @@ class ModelSelector:
     def select_default():
         selected_model = os.getenv('MODEL')
         if not selected_model:
-            selected_model = 'LLAMA3_2_3B'
+            selected_model = 'LLAMA3_2_1B'
 
         if selected_model == 'MISTRAL':
             model = OllamaWrapper(Models.MISTRAL)
@@ -23,8 +23,8 @@ class ModelSelector:
             model = OllamaWrapper(Models.PHI)
         elif selected_model == 'GEMMA':
             model = OllamaWrapper(Models.GEMMA)
-        elif selected_model == 'LLAMA3_2_3B':
-            model = OllamaWrapper(Models.LLAMA3_2_3B)
+        elif selected_model == 'LLAMA3_2_1B':
+            model = OllamaWrapper(Models.LLAMA3_2_1B)
         else:
             raise ValueError(f"Invalid model selection {selected_model}")
 

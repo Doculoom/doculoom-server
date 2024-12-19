@@ -8,7 +8,7 @@ An LLM based contextual question answering chatbot
 
 1. Install [Ollama](https://ollama.com/download/linux)
 2. Start the server
-3. Run ```ollama pull llama3.2```
+3. Run ```ollama pull llama3.2:1b```
 
 ### Prerequisites to use OpenAI models
 
@@ -16,9 +16,9 @@ An LLM based contextual question answering chatbot
 ```commandline
 export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
 ```
-2. Set default model to LLAMA3_2_3B
+2. Set default model to LLAMA3_2_1B
 ```commandline
-export MODEL=LLAMA3_2_3B
+export MODEL=LLAMA3_2_1B
 ```
 
 ### Install dependencies
@@ -29,7 +29,7 @@ pip install poetry && poetry install --no-dev
 
 ### Start the server
 ```bash
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 6666
+poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 
@@ -46,6 +46,6 @@ To run the server, follow these steps:
 2. **Start the server**
 
    ```bash
-   docker run -it --rm -p 6666:6666 doculoom
+   docker run -it --rm -p 8000:8000 doculoom
    ```
 

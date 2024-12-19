@@ -4,7 +4,7 @@ class Models:
     QWEN7B  =       {'id': 3, 'name': 'qwen:7b'      }
     PHI     =       {'id': 4, 'name': 'phi:chat'     }
     GEMMA   =       {'id': 5, 'name': 'gemma'        }
-    LLAMA3_2_3B   = {'id': 5, 'name': 'llama3.2'     }
+    LLAMA3_2_1B   = {'id': 5, 'name': 'llama3.2:1b'     }
 
 
 class Prompts:
