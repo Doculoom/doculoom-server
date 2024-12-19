@@ -4,11 +4,11 @@ An LLM based contextual question answering chatbot
 
 ## Local setup
 
-### Prerequisites to use local models (Mistral)
+### Prerequisites to use local models (LLAMA/Mistral)
 
 1. Install [Ollama](https://ollama.com/download/linux)
 2. Start the server
-3. Run ```ollama pull mistral```
+3. Run ```ollama pull llama3.2```
 
 ### Prerequisites to use OpenAI models
 
@@ -16,9 +16,9 @@ An LLM based contextual question answering chatbot
 ```commandline
 export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
 ```
-2. Set default model to GPT3_5
+2. Set default model to LLAMA3_2_3B
 ```commandline
-export MODEL=GPT3_5
+export MODEL=LLAMA3_2_3B
 ```
 
 ### Install dependencies
@@ -33,19 +33,19 @@ poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 6666
 ```
 
 
-## Docker setup (WIP: for local models)
+## Docker setup 
 
 To run the server, follow these steps:
 
 1. **Build the Docker Image**
 
    ```bash
-   docker build --build-arg OPENAI_API_KEY=<YOUR_OPENAI_API_KEY> -t doculoom .
+   docker build -t doculoom .
    ```
    
 2. **Start the server**
 
    ```bash
-   docker run -p 6666:6666 doculoom
+   docker run -it --rm -p 6666:6666 doculoom
    ```
 

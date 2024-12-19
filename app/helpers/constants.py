@@ -1,9 +1,10 @@
 class Models:
-    GPT3_5  =  {'id': 1, 'name': 'gpt-3.5-turbo'}
-    MISTRAL =  {'id': 2, 'name': 'mistral'      }
-    QWEN7B  =  {'id': 3, 'name': 'qwen:7b'      }
-    PHI     =  {'id': 4, 'name': 'phi:chat'     }
-    GEMMA   =  {'id': 5, 'name': 'gemma'        }
+    GPT3_5  =       {'id': 1, 'name': 'gpt-3.5-turbo'}
+    MISTRAL =       {'id': 2, 'name': 'mistral'      }
+    QWEN7B  =       {'id': 3, 'name': 'qwen:7b'      }
+    PHI     =       {'id': 4, 'name': 'phi:chat'     }
+    GEMMA   =       {'id': 5, 'name': 'gemma'        }
+    LLAMA3_2_3B   = {'id': 5, 'name': 'llama3.2'     }
 
 
 class Prompts:
