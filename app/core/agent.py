@@ -86,8 +86,8 @@ class Agent:
         })
         answer = response["answer"].strip()
 
-        self.chat_history.add_user_message(message)
-        self.chat_history.add_ai_message(answer)
+        # self.chat_history.add_user_message(message)
+        # self.chat_history.add_ai_message(answer)
         return answer
 
     def clear_chat_history(self, doc_name):
