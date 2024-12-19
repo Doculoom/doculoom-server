@@ -6,7 +6,7 @@ authors = ["Vinay Kudari <vinay@braveorbit.io>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 fastapi = "^0.103.1"
 uvicorn = "^0.23.2"
 pydantic = "^2.5.3"
